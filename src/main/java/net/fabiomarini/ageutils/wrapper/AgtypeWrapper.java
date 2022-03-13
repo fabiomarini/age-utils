@@ -23,7 +23,7 @@ public class AgtypeWrapper<T> {
         return new AgtypeWrapper<>(object);
     }
 
-    private static AgtypeObject makeAgtypeFromObject(Object t) {
+    private AgtypeObject makeAgtypeFromObject(Object t) {
         if(t.getClass().isArray()) {
             return makeAgtypeListFromObject((Object[]) t);
         } else if(Collection.class.isAssignableFrom(t.getClass())) {
@@ -35,7 +35,7 @@ public class AgtypeWrapper<T> {
         }
     }
 
-    private static AgtypeList makeAgtypeListFromObject(Object[] array) {
+    private AgtypeList makeAgtypeListFromObject(Object[] array) {
         AgtypeListBuilder builder = new AgtypeListBuilder();
         for(Object val : array) {
             addToListBuilder(builder, val);
@@ -43,7 +43,7 @@ public class AgtypeWrapper<T> {
         return builder.build();
     }
 
-    private static AgtypeList makeAgtypeListFromObject(Collection<?> collection) {
+    private AgtypeList makeAgtypeListFromObject(Collection<?> collection) {
         AgtypeListBuilder builder = new AgtypeListBuilder();
         for(Object val : collection) {
             addToListBuilder(builder, val);
@@ -51,7 +51,7 @@ public class AgtypeWrapper<T> {
         return builder.build();
     }
 
-    private static void addToListBuilder(AgtypeListBuilder builder, Object val) {
+    private void addToListBuilder(AgtypeListBuilder builder, Object val) {
         if (val instanceof Integer) {
             builder.add((Integer) val);
         } else if (val instanceof Long) {
@@ -79,7 +79,7 @@ public class AgtypeWrapper<T> {
         }
     }
 
-    private static AgtypeMap makeAgtypeMapFromObject(Object t) {
+    private AgtypeMap makeAgtypeMapFromObject(Object t) {
         AgtypeMapBuilder builder = new AgtypeMapBuilder();
         PropertyDescriptor[] pDecriptors = BeanUtils.getPropertyDescriptors(t.getClass());
         for (PropertyDescriptor sourceDescriptor : pDecriptors) {
@@ -99,7 +99,7 @@ public class AgtypeWrapper<T> {
         return builder.build();
     }
 
-    private static AgtypeMap makeAgtypeMapFromObject(Map<Object, Object> map) {
+    private AgtypeMap makeAgtypeMapFromObject(Map<Object, Object> map) {
         AgtypeMapBuilder builder = new AgtypeMapBuilder();
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             addToMapBuilder(builder, entry.getKey().toString(), entry.getValue());
@@ -107,7 +107,7 @@ public class AgtypeWrapper<T> {
         return builder.build();
     }
 
-    private static void addToMapBuilder(AgtypeMapBuilder builder, String propertyName, Object val) {
+    private void addToMapBuilder(AgtypeMapBuilder builder, String propertyName, Object val) {
         if (val instanceof Integer) {
             builder.add(propertyName, (Integer) val);
         } else if (val instanceof Long) {
@@ -135,7 +135,7 @@ public class AgtypeWrapper<T> {
         }
     }
 
-    private static String serializeAgtype(Object obj) {
+    private String serializeAgtype(Object obj) {
         if (obj == null) {
             return "null";
         } else if (obj instanceof String) {
@@ -160,7 +160,7 @@ public class AgtypeWrapper<T> {
                 return joiner.toString();
             } else if (obj instanceof AgtypeList) {
                 joiner = new StringJoiner(",", "[", "]");
-                Stream<String> stringStream = ((AgtypeList) obj).stream().map(AgtypeWrapper::serializeAgtype);
+                Stream<String> stringStream = ((AgtypeList) obj).stream().map(this::serializeAgtype);
                 Objects.requireNonNull(joiner);
                 stringStream.forEach(joiner::add);
                 return joiner.toString();

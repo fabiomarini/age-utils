@@ -24,7 +24,9 @@ public class AgtypeWrapper<T> {
     }
 
     private AgtypeObject makeAgtypeFromObject(Object t) {
-        if(t.getClass().isArray()) {
+        if(t == null) {
+            return null;
+        } else if(t.getClass().isArray()) {
             return makeAgtypeListFromObject((Object[]) t);
         } else if(Collection.class.isAssignableFrom(t.getClass())) {
             return makeAgtypeListFromObject((Collection<?>) t);
@@ -137,7 +139,7 @@ public class AgtypeWrapper<T> {
 
     private String serializeAgtype(Object obj) {
         if (obj == null) {
-            return "null";
+            return null;
         } else if (obj instanceof String) {
             return "\"" + StringEscapeUtils.escapeEcmaScript((String) obj) + "\"";
         } else if (obj instanceof Integer || obj instanceof Long
@@ -153,7 +155,7 @@ public class AgtypeWrapper<T> {
                 joiner = new StringJoiner(",", "{", "}");
                 Stream<StringJoiner> joinerStream = ((AgtypeMap) obj).entrySet()
                                                                      .stream()
-                                                                     .map((entry) -> new StringJoiner(":").add(entry.getKey().toString())
+                                                                     .map((entry) -> new StringJoiner(":").add(entry.getKey())
                                                                                                           .add(serializeAgtype(entry.getValue())));
                 Objects.requireNonNull(joiner);
                 joinerStream.forEach(joiner::merge);
@@ -181,6 +183,10 @@ public class AgtypeWrapper<T> {
         } else {
             return serializeAgtype(makeAgtypeFromObject(object));
         }
+    }
+
+    public boolean isNull() {
+        return object == null;
     }
 
 }

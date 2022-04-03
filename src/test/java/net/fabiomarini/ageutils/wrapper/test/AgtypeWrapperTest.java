@@ -11,6 +11,12 @@ import java.util.Map;
 class AgtypeWrapperTest {
 
     @Test
+    void testNull() {
+        String value = AgtypeWrapper.from(null).toString();
+        assertNull(value, "Null value not correct");
+    }
+
+    @Test
     void testString() {
         String value = AgtypeWrapper.from("hello").toString();
         assertEquals("\"hello\"",value, "String value not correct");

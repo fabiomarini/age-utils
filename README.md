@@ -13,14 +13,6 @@ GraphItem<ItemProperties> item = itemsMapper.findItemByParams(AgtypeWrapper.from
 GraphItem<ItemProperties> item = itemsMapper.findItemByCode(AgtypeWrapper.from("code"));
 ```
 
-Example Cypher query parameter mapping:
-```sql
-SELECT * FROM cypher('${schema}', $$
-    MATCH (i:Item ${params})
-    RETURN id(i), properties(i)
-$$) AS (id agtype, properties agtype);
-```
-
 ## GraphItem
 The `GraphItem` is a utility class to wrap the result type of graph query with the node `id` and the generic `properties`.
 You can define your custom properties mapping object and pass it as the generic type inside the GraphItem definition.
@@ -29,6 +21,51 @@ You can define your custom properties mapping object and pass it as the generic 
 GraphItem<ItemProperties> item = itemsMapper.findItemByCode(AgtypeWrapper.from("code"));
 long id = item.getId();
 ItemProperties props = item.getProperties();
+```
+
+Example Cypher query parameter mapping:
+```sql
+SELECT * FROM cypher('${schema}', $$
+    MATCH (i:Item ${params})
+    RETURN id(i), properties(i)
+$$) AS (id agtype, properties agtype);
+```
+
+## GraphVertex and GraphEdge
+The `GraphVertex` and `GraphEdge` classes are utility classes that represent the structure of a `Vertex` or an `Edge`
+in Apache AGE. The usage is similar to the GraphItem but you can map directly the entire vertex or edge without 
+the need to separately capture `id()` and `properties()`.
+
+```java
+GraphVertex<ItemProperties> item = itemsMapper.findItemByCode(AgtypeWrapper.from("code"));
+long id = item.getId();
+String label = item.getLabel();
+ItemProperties props = item.getProperties();
+```
+
+Example Cypher query parameter mapping:
+```sql
+SELECT * FROM cypher('${schema}', $$
+    MATCH (i:Item ${params})
+    RETURN i
+$$) AS (item agtype);
+```
+
+## Graph TypeHandlers
+
+```java
+public class MyVertex extends GraphVertex<MyProperties> {
+}
+
+public class MyCatalog extends GraphEdge<MyProperties> {
+}
+
+@MappedTypes({MyEdge.class, MyVertex.class})
+public class MyGraphTypeHandler<T extends GraphItem<?>> extends GraphTypeHandler<T> {
+    public MyGraphTypeHandler(Class<T> type) {
+        super(type);
+    }
+}
 ```
 
 ## Building the library

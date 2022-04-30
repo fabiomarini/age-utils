@@ -8,10 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class AgtypeWrapper<T> {
@@ -24,13 +21,13 @@ public class AgtypeWrapper<T> {
     }
 
     private AgtypeObject makeAgtypeFromObject(Object t) {
-        if(t == null) {
+        if (t == null) {
             return null;
-        } else if(t.getClass().isArray()) {
+        } else if (t.getClass().isArray()) {
             return makeAgtypeListFromObject((Object[]) t);
-        } else if(Collection.class.isAssignableFrom(t.getClass())) {
+        } else if (Collection.class.isAssignableFrom(t.getClass())) {
             return makeAgtypeListFromObject((Collection<?>) t);
-        } else if(Map.class.isAssignableFrom(t.getClass())) {
+        } else if (Map.class.isAssignableFrom(t.getClass())) {
             return makeAgtypeMapFromObject((Map<Object, Object>) t);
         } else {
             return makeAgtypeMapFromObject(t);
@@ -39,7 +36,7 @@ public class AgtypeWrapper<T> {
 
     private AgtypeList makeAgtypeListFromObject(Object[] array) {
         AgtypeListBuilder builder = new AgtypeListBuilder();
-        for(Object val : array) {
+        for (Object val : array) {
             addToListBuilder(builder, val);
         }
         return builder.build();
@@ -47,7 +44,7 @@ public class AgtypeWrapper<T> {
 
     private AgtypeList makeAgtypeListFromObject(Collection<?> collection) {
         AgtypeListBuilder builder = new AgtypeListBuilder();
-        for(Object val : collection) {
+        for (Object val : collection) {
             addToListBuilder(builder, val);
         }
         return builder.build();
@@ -73,7 +70,7 @@ public class AgtypeWrapper<T> {
         } else if (val.getClass().isArray()) {
             builder.add(makeAgtypeListFromObject((Object[]) val));
         } else if (Collection.class.isAssignableFrom(val.getClass())) {
-            builder.add(makeAgtypeListFromObject((Collection<?>)val));
+            builder.add(makeAgtypeListFromObject((Collection<?>) val));
         } else if (Map.class.isAssignableFrom(val.getClass())) {
             builder.add(makeAgtypeMapFromObject((Map<Object, Object>) val));
         } else {
@@ -142,10 +139,7 @@ public class AgtypeWrapper<T> {
             return null;
         } else if (obj instanceof String) {
             return "\"" + StringEscapeUtils.escapeEcmaScript((String) obj) + "\"";
-        } else if (obj instanceof Integer || obj instanceof Long
-                || obj instanceof Double || obj instanceof Float
-                || obj instanceof BigInteger
-                || obj instanceof Boolean) {
+        } else if (obj instanceof Integer || obj instanceof Long || obj instanceof Double || obj instanceof Float || obj instanceof BigInteger || obj instanceof Boolean) {
             return obj.toString();
         } else if (obj instanceof BigDecimal) {
             return ((BigDecimal) obj).toPlainString();
@@ -174,12 +168,10 @@ public class AgtypeWrapper<T> {
 
     @Override
     public String toString() {
-        if (object instanceof String
-                || object instanceof Integer || object instanceof Long
-                || object instanceof Double || object instanceof Float
-                || object instanceof BigInteger || object instanceof BigDecimal
-                || object instanceof Boolean) {
+        if (object instanceof String || object instanceof Integer || object instanceof Long || object instanceof Double || object instanceof Float || object instanceof BigInteger || object instanceof BigDecimal || object instanceof Boolean) {
             return serializeAgtype(object);
+        } else if (object instanceof UUID) {
+            return serializeAgtype(object.toString());
         } else {
             return serializeAgtype(makeAgtypeFromObject(object));
         }

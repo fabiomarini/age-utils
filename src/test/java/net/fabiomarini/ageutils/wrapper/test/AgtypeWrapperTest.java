@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 class AgtypeWrapperTest {
 
@@ -62,6 +63,12 @@ class AgtypeWrapperTest {
     void testObject() {
         String value = AgtypeWrapper.from(new PropertiesObj()).toString();
         assertEquals("{prop2:2,prop1:\"prop1\",prop4:[\"A\",\"B\",\"C\"],prop3:true}", value, "Object value not correct");
+    }
+    @Test
+    void testUuid() {
+        UUID uuid = UUID.randomUUID();
+        String value = AgtypeWrapper.from(uuid).toString();
+        assertEquals("\"" + uuid.toString() + "\"", value, "UUID value not correct");
     }
     @Test
     void testMap() {
